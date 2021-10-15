@@ -1,0 +1,34 @@
+{
+  "name": "react-hook-form-persistence",
+  "version": "0.0.1",
+  "description": "very simple library for persisting react-hook-form",
+  "license": "MIT",
+  "main": "./lib/main.js",
+  "types": "./lib/main.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kanematsugaku/react-hook-form-persistence.git"
+  },
+  "author": "Gaku Kanematsu",
+  "contributors": [
+    "Kazuma Nakagawa"
+  ],
+  "keywords": [
+    "react-hook-form",
+    "persist",
+    "persistence"
+  ],
+  "peerDependencies": {
+    "react": "^17.0.0",
+    "react-hook-form": "^7.0.0"
+  },
+  "devDependencies": {
+    "@tsconfig/recommended": "^1.0.1",
+    "@types/react": "^17.0.29",
+    "typescript": "^4.4.4"
+  },
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  }
+}
