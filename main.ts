@@ -1,8 +1,10 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
 import { useEffect } from 'react';
 
-// eslint-disable-next-line
-export const useFormPersist = <T>(useFormReturn: UseFormReturn<T>, excludeKeys?: (keyof T)[]) => {
+export default function useFormPersist<T>(
+  useFormReturn: UseFormReturn<T>,
+  excludeKeys?: (keyof T)[]
+) {
   const { watch, setValue } = useFormReturn;
 
   const key = '_RFHP_';
@@ -48,4 +50,4 @@ export const useFormPersist = <T>(useFormReturn: UseFormReturn<T>, excludeKeys?:
   }, [storage]);
 
   return useFormReturn;
-};
+}

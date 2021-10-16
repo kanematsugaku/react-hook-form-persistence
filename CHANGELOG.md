@@ -1,0 +1,8 @@
+## 0.0.2 (October 16, 2021)
+
+- Change to export default.
+- Write a explanation.
+
+## 0.0.1 (October 15, 2021)
+
+- Initial Commit.

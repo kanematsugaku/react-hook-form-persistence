@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import { useFormPersist } from './main';
+import useFormPersist from './main';
 
 export default function App() {
   type FormField = { persisted1: string; persisted2: string; unpersisted: string };
