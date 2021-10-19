@@ -47,20 +47,35 @@ const { register, handleSubmit } = useFormPersist(useForm<FormField>(), ['email'
 
 ### Optional validation
 
-In addition to the result returned by `useForm`, useFormPersist returns `isFilled` which is true if all fields are filled. This validation includes excluded fields in second arguments.
+In addition to the result returned by `useForm`, useFormPersist returns some additional values regarding validation.
+
+#### `isFilled`
+
+This value is true if all fields are filled. This validation includes excluded fields in second arguments.
+
+#### `hasNoError`
+
+This value is true if all fields has no error. This validation includes excluded fields in second arguments.
+
+#### `canSubmit`
+
+- Before submit: This value is true if `isFilled`
+- After submit: This value is true if `hasNoError`
 
 ```tsx
 const ExampleForm = () => {
   type FormField = { name: string };
-  const { register, handleSubmit, isFilled } = useFormPersist(useForm<FormField>());
+  const { register, handleSubmit, isFilled, hasNoError, canSubmit } = useFormPersist(
+    useForm<FormField>()
+  );
   const onSubmit = (data: FormField) => console.log(data);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <input {...register('name')} />
-      <button type="submit" disabled={!isFilled}>
-        Submit
-      </button>
+      <input type="submit" value="Submit if isFilled" disabled={!isFilled} />
+      <input type="submit" value="Submit if hasNoError" disabled={!hasNoError} />
+      <input type="submit" value="Submit if canSubmit" disabled={!canSubmit} />
     </form>
   );
 };
