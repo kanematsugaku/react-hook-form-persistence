@@ -4,3 +4,4 @@ LICENSE
 CHANGELOG
 .gitignore
 tsconfig.json
+main.ts

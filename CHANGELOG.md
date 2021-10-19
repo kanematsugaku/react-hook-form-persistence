@@ -1,3 +1,7 @@
+## 0.0.4 (October 19, 2021)
+
+- Update .npmignore.
+
 ## 0.0.3 (October 19, 2021)
 
 - Change the way to call storage.
