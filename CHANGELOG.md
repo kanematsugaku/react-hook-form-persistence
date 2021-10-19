@@ -1,3 +1,7 @@
+## 0.0.6 (October 20, 2021)
+
+- Add return value `hasNoError` and `canSubmit`.
+
 ## 0.0.5 (October 19, 2021)
 
 - Add return value `isFilled`.

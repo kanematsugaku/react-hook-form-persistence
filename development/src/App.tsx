@@ -3,9 +3,10 @@ import useFormPersist from './main';
 
 export default function App() {
   type FormField = { persisted1: string; persisted2: string; unpersisted: string };
-  const { register, handleSubmit, isFilled } = useFormPersist(useForm<FormField>(), [
+  const { register, handleSubmit, canSubmit } = useFormPersist(useForm<FormField>(), [
     'unpersisted',
   ]);
+
   const onSubmit = (data: FormField) => console.log(data);
   const reload = () => window.location.reload();
   const clear = () => {
@@ -18,15 +19,15 @@ export default function App() {
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-          Persisted1: <input {...register('persisted1')} />
+          Persisted1: <input {...register('persisted1', { required: true })} />
         </div>
         <div>
-          Persisted2: <input {...register('persisted2')} />
+          Persisted2: <input {...register('persisted2', { required: true, minLength: 8 })} />
         </div>
         <div>
-          Unpersisted: <input {...register('unpersisted')} />
+          Unpersisted: <input {...register('unpersisted', { required: true })} />
         </div>
-        <input type="submit" value="Submit" disabled={!isFilled} />
+        <input type="submit" value="Submit" disabled={!canSubmit} />
       </form>
       <button onClick={reload}>Reload</button>
       <button onClick={clear}>Clear Storage</button>

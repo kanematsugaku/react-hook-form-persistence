@@ -1,11 +1,16 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 export default function useFormPersist<T>(
   useFormReturn: UseFormReturn<T>,
   excludeKeys?: (keyof T)[],
 ) {
-  const { watch, setValue, getValues } = useFormReturn;
+  const {
+    watch,
+    setValue,
+    getValues,
+    formState: { errors, isSubmitted },
+  } = useFormReturn;
 
   const key = '_RFHP_';
   const inputted = watch();
@@ -49,7 +54,25 @@ export default function useFormPersist<T>(
   }, []);
 
   // return true if all fields are filled
-  const isFilled = Object.values(getValues()).every((value) => value !== '');
+  const isFilled = useCallback(() => {
+    const values = Object.values(getValues());
+    return values.length !== 0 && values.every((value) => value !== '');
+  }, [getValues]);
 
-  return { ...useFormReturn, isFilled };
+  // return true if all fields has no error
+  const hasNoError = useCallback(() => {
+    return Object.keys(errors).length === 0;
+  }, [errors]);
+
+  // before submit: return true if isFilled, after submit: return true if isValid
+  const canSubmit = useCallback(() => {
+    return isSubmitted ? hasNoError() : isFilled();
+  }, [isSubmitted, hasNoError, isFilled]);
+
+  return {
+    ...useFormReturn,
+    isFilled: isFilled(),
+    hasNoError: hasNoError(),
+    canSubmit: canSubmit(),
+  };
 }
