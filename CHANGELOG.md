@@ -1,3 +1,7 @@
+## 0.0.5 (October 19, 2021)
+
+- Add return value `isFilled`.
+
 ## 0.0.4 (October 19, 2021)
 
 - Update .npmignore.
