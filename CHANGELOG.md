@@ -1,3 +1,7 @@
+## 0.0.3 (October 19, 2021)
+
+- Change the way to call storage.
+
 ## 0.0.2 (October 16, 2021)
 
 - Change to export default.
