@@ -8,7 +8,6 @@ export default function useFormPersist<T>(
   const { watch, setValue } = useFormReturn;
 
   const key = '_RFHP_';
-  const storage = window.sessionStorage;
   const inputted = watch();
 
   const isvalid = (arg: unknown): arg is Record<string, string> => {
@@ -18,7 +17,7 @@ export default function useFormPersist<T>(
 
   // retrieve data from storage and set them to form
   useEffect(() => {
-    const storaged = storage.getItem(key);
+    const storaged = window.sessionStorage.getItem(key);
     if (storaged !== null) {
       const properties = JSON.parse(storaged); // eslint-disable-line
       if (isvalid(properties)) {
@@ -28,7 +27,7 @@ export default function useFormPersist<T>(
         });
       }
     }
-  }, [setValue, storage]);
+  }, [setValue]);
 
   // retrieve data from form and set them to storage
   useEffect(() => {
@@ -39,15 +38,15 @@ export default function useFormPersist<T>(
       delete inputted[key];
     });
     const properties = JSON.stringify(inputted);
-    storage.setItem(key, properties);
-  }, [watch, storage, inputted, excludeKeys]);
+    window.sessionStorage.setItem(key, properties);
+  }, [watch, inputted, excludeKeys]);
 
   // delete data in storage when component is unmounted
   useEffect(() => {
     return () => {
-      storage.removeItem(key);
+      window.sessionStorage.removeItem(key);
     };
-  }, [storage]);
+  }, []);
 
   return useFormReturn;
 }
