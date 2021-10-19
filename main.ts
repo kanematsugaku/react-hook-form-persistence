@@ -5,7 +5,7 @@ export default function useFormPersist<T>(
   useFormReturn: UseFormReturn<T>,
   excludeKeys?: (keyof T)[]
 ) {
-  const { watch, setValue } = useFormReturn;
+  const { watch, setValue, getValues } = useFormReturn;
 
   const key = '_RFHP_';
   const inputted = watch();
@@ -15,7 +15,7 @@ export default function useFormPersist<T>(
     return type !== null && type === 'object';
   };
 
-  // retrieve data from storage and set them to form
+  // retrieve data from a storage and set them to a form
   useEffect(() => {
     const storaged = window.sessionStorage.getItem(key);
     if (storaged !== null) {
@@ -29,7 +29,7 @@ export default function useFormPersist<T>(
     }
   }, [setValue]);
 
-  // retrieve data from form and set them to storage
+  // retrieve data from a form and set them to a storage
   useEffect(() => {
     excludeKeys?.forEach((key) => {
       // FIXME: want to remove disable/ignore
@@ -41,12 +41,15 @@ export default function useFormPersist<T>(
     window.sessionStorage.setItem(key, properties);
   }, [watch, inputted, excludeKeys]);
 
-  // delete data in storage when component is unmounted
+  // delete data in a storage when a component is unmounted
   useEffect(() => {
     return () => {
       window.sessionStorage.removeItem(key);
     };
   }, []);
 
-  return useFormReturn;
+  // return true if all fields are filled
+  const isFilled = Object.values(getValues()).every((value) => value !== '');
+
+  return { ...useFormReturn, isFilled };
 }
