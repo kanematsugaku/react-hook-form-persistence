@@ -3,15 +3,14 @@ import useFormPersist from './main';
 
 export default function App() {
   type FormField = { persisted1: string; persisted2: string; unpersisted: string };
-  const { register, handleSubmit, canSubmit } = useFormPersist(useForm<FormField>(), [
-    'unpersisted',
-  ]);
+  const { register, handleSubmit, canSubmit, unpersist } = useFormPersist(useForm<FormField>(), {
+    exclude: ['unpersisted'],
+  });
 
   const onSubmit = (data: FormField) => console.log(data);
   const reload = () => window.location.reload();
   const clear = () => {
-    window.sessionStorage.clear();
-    window.localStorage.clear();
+    unpersist();
     reload();
   };
 
