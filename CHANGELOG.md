@@ -1,3 +1,9 @@
+## 0.0.8 (October 20, 2021)
+
+- Change the way to pass arguments.
+- Add arguments.
+- Add return value `unpersist`.
+
 ## 0.0.7 (October 20, 2021)
 
 - Add handling for isFilled when the value of getValues is undefined .

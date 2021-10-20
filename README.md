@@ -36,28 +36,49 @@ export default ExampleForm;
 
 ## Additional Example Usage
 
-### Exclude fields
+### Optional Arguments
 
-If you want specific fields not to be persistent, specify them as the second argument.
+`react-hook-form-persistence` optionally takes a second argument as an object.
+
+#### Exclude fields
+
+If you want specific fields not to be persistent, specify them as `exclude`.
 
 ```tsx
 type FormField = { name: string; email: string; password: string };
-const { register, handleSubmit } = useFormPersist(useForm<FormField>(), ['email', 'password']);
+const { register, handleSubmit } = useFormPersist(useForm<FormField>(), {
+  exclude: ['email', 'password'],
+});
 ```
 
-### Optional validation
+#### Disable data deletion when unmounting a component
 
-In addition to the result returned by `useForm`, useFormPersist returns some additional values regarding validation.
+By default, `react-hook-form-persistence` will delete persisted data when a component is unmounted. If you want to disable this process, specify it as `shouldUnpersist: false`.
 
-#### `isFilled`
+```tsx
+type FormField = { name: string; email: string; password: string };
+const { register, handleSubmit } = useFormPersist(useForm<FormField>(), {
+  shouldUnpersist: false,
+});
+```
+
+### Optional return values
+
+In addition to the result returned by `useForm`, useFormPersist returns some additional values.
+
+#### `unpersist: () => void`
+
+Call this function to delete persisted data whenever you want.
+
+#### `isFilled: boolean`
 
 This value is true if all fields are filled. This validation includes excluded fields in second arguments.
 
-#### `hasNoError`
+#### `hasNoError: boolean`
 
 This value is true if all fields has no error. This validation includes excluded fields in second arguments.
 
-#### `canSubmit`
+#### `canSubmit: boolean`
 
 - Before submit: This value is true if `isFilled`
 - After submit: This value is true if `hasNoError`
