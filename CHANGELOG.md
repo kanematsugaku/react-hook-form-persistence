@@ -1,3 +1,7 @@
+## 0.0.7 (October 20, 2021)
+
+- Add handling for isFilled when the value of getValues is undefined .
+
 ## 0.0.6 (October 20, 2021)
 
 - Add return value `hasNoError` and `canSubmit`.
