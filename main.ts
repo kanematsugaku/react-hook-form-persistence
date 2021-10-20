@@ -56,7 +56,7 @@ export default function useFormPersist<T>(
   // return true if all fields are filled
   const isFilled = useCallback(() => {
     const values = Object.values(getValues());
-    return values.length !== 0 && values.every((value) => value !== '');
+    return values.length !== 0 && values.every((value) => value !== '' && value !== undefined);
   }, [getValues]);
 
   // return true if all fields has no error
