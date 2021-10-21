@@ -1,16 +1,17 @@
 import { useForm } from 'react-hook-form';
-import useFormPersist from './main';
+import useFormPersist from 'react-hook-form-persistence';
 
 export default function App() {
   type FormField = { persisted1: string; persisted2: string; unpersisted: string };
-  const { register, handleSubmit, canSubmit, unpersist } = useFormPersist(useForm<FormField>(), {
-    exclude: ['unpersisted'],
-  });
+  const { register, handleSubmit, canSubmit } = useFormPersist.single(useForm<FormField>(), [
+    'unpersisted',
+  ]);
 
   const onSubmit = (data: FormField) => console.log(data);
   const reload = () => window.location.reload();
   const clear = () => {
-    unpersist();
+    window.sessionStorage.clear();
+    window.localStorage.clear();
     reload();
   };
 
