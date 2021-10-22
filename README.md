@@ -49,7 +49,10 @@ If you want specific fields not to be persistent, specify them as the second arg
 
 ```tsx
 type FormField = { name: string; email: string; password: string };
-const { register, handleSubmit } = useFormPersist(useForm<FormField>(), ['email', 'password']);
+const { register, handleSubmit } = useFormPersist.single(useForm<FormField>(), [
+  'email',
+  'password',
+]);
 ```
 
 ### Optional return values
@@ -72,7 +75,7 @@ This value is true if all fields has no error. This validation includes excluded
 ```tsx
 const ExampleForm = () => {
   type FormField = { name: string };
-  const { register, handleSubmit, isFilled, hasNoError, canSubmit } = useFormPersist(
+  const { register, handleSubmit, isFilled, hasNoError, canSubmit } = useFormPersist.single(
     useForm<FormField>(),
   );
   const onSubmit = (data: FormField) => console.log(data);
@@ -96,7 +99,7 @@ const ExampleForm = () => {
 ```tsx
 const ExampleForm = () => {
   type FormField = { name: string };
-  const { register, handleSubmit, unpersist } = useFormPersist(useForm<FormField>());
+  const { register, handleSubmit, unpersist } = useFormPersist.multi(useForm<FormField>());
   const onSubmit = (data: FormField) => console.log(data);
 
   return (
