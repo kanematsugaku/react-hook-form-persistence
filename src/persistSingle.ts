@@ -1,5 +1,6 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
 import { useEffect } from 'react';
+import { isValid, isFilled, hasNoError, canSubmit } from './share';
 
 export function useFormPersistSingle<T>(
   useFormReturn: UseFormReturn<T>,
@@ -14,21 +15,18 @@ export function useFormPersistSingle<T>(
 
   const key = 'RFHP_S';
   const inputted = watch();
-
-  const isValid = (arg: unknown): arg is Record<string, string> => {
-    const type = typeof arg;
-    return type !== null && type === 'object';
-  };
+  const getStorage = () => window.sessionStorage;
 
   // retrieve data from a storage and set them to a form
   useEffect(() => {
-    const storaged = window.sessionStorage.getItem(key);
+    const storage = getStorage();
+    const storaged = storage.getItem(key);
     if (storaged === null) {
       return;
     }
-    const properties = JSON.parse(storaged); // eslint-disable-line
-    if (isValid(properties)) {
-      Object.entries(properties).forEach(([key, value]) => {
+    const parsed = JSON.parse(storaged); // eslint-disable-line
+    if (isValid(parsed)) {
+      Object.entries(parsed).forEach(([key, value]) => {
         // FIXME: want to remove assertions
         setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
       });
@@ -37,6 +35,7 @@ export function useFormPersistSingle<T>(
 
   // retrieve data from a form and set them to a storage
   useEffect(() => {
+    const storage = getStorage();
     const removed = excludes.reduce((acc, key) => {
       // FIXME: want to remove disable/ignore
       // eslint-disable-next-line
@@ -45,36 +44,25 @@ export function useFormPersistSingle<T>(
       return acc;
     }, inputted);
     const stringified = JSON.stringify(removed);
-    window.sessionStorage.setItem(key, stringified);
+    storage.setItem(key, stringified);
   }, [excludes, inputted]);
 
   // delete data in a storage when a component is unmounted
   useEffect(() => {
     return () => {
-      window.sessionStorage.removeItem(key);
+      const storage = getStorage();
+      storage.removeItem(key);
     };
   }, []);
 
-  // return true if all fields are filled
-  const isFilled = () => {
-    const values = Object.values(getValues());
-    return values.length !== 0 && values.every((value) => value !== '' && value !== undefined);
-  };
-
-  // return true if all fields has no error
-  const hasNoError = () => {
-    return Object.keys(errors).length === 0;
-  };
-
-  // before submit: return true if isFilled, after submit: return true if isValid
-  const canSubmit = () => {
-    return isSubmitted ? hasNoError() : isFilled();
-  };
+  const isFilled_ = isFilled(getValues);
+  const hasNoError_ = hasNoError(errors);
+  const canSubmit_ = canSubmit(isSubmitted, isFilled_, hasNoError_);
 
   return {
     ...useFormReturn,
-    isFilled: isFilled(),
-    hasNoError: hasNoError(),
-    canSubmit: canSubmit(),
+    isFilled: isFilled_,
+    hasNoError: hasNoError_,
+    canSubmit: canSubmit_,
   };
 }
