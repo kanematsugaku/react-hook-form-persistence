@@ -69,7 +69,7 @@ export function useFormPersistMulti<T>(
       };
     }
   }, [isTriggered]);
-  const unPersist = useCallback(() => setIsTriggered(true), []);
+  const unpersist = useCallback(() => setIsTriggered(true), []);
 
   const isFilled_ = isFilled(getValues);
   const hasNoError_ = hasNoError(errors);
@@ -77,7 +77,7 @@ export function useFormPersistMulti<T>(
 
   return {
     ...useFormReturn,
-    unPersist,
+    unpersist,
     isFilled: isFilled_,
     hasNoError: hasNoError_,
     canSubmit: canSubmit_,

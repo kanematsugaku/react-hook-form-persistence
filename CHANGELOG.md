@@ -1,8 +1,6 @@
 ## 0.0.8 (October 20, 2021)
 
-- Change the way to pass arguments.
-- Add arguments.
-- Add return value `unpersist`.
+- Split to two methods.
 
 ## 0.0.7 (October 20, 2021)
 
