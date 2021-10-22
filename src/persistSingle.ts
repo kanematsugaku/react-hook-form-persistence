@@ -1,5 +1,5 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
 export function useFormPersistSingle<T>(
   useFormReturn: UseFormReturn<T>,
@@ -12,7 +12,7 @@ export function useFormPersistSingle<T>(
     formState: { errors, isSubmitted },
   } = useFormReturn;
 
-  const key = '_RFHPS_';
+  const key = 'RFHP_S';
   const inputted = watch();
 
   const isValid = (arg: unknown): arg is Record<string, string> => {
@@ -20,36 +20,33 @@ export function useFormPersistSingle<T>(
     return type !== null && type === 'object';
   };
 
-  const excludeProperties = useCallback(<K>(properties: K, keys: (keyof T)[] = []) => {
-    keys.forEach((key) => {
-      // FIXME: want to remove disable/ignore
-      // eslint-disable-next-line
-      // @ts-ignore
-      delete properties[key];
-    });
-    return properties;
-  }, []);
-
   // retrieve data from a storage and set them to a form
   useEffect(() => {
     const storaged = window.sessionStorage.getItem(key);
-    if (storaged !== null) {
-      const properties = JSON.parse(storaged); // eslint-disable-line
-      if (isValid(properties)) {
-        Object.entries(properties).forEach(([key, value]) => {
-          // FIXME: want to remove assertions
-          setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
-        });
-      }
+    if (storaged === null) {
+      return;
+    }
+    const properties = JSON.parse(storaged); // eslint-disable-line
+    if (isValid(properties)) {
+      Object.entries(properties).forEach(([key, value]) => {
+        // FIXME: want to remove assertions
+        setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
+      });
     }
   }, [setValue]);
 
   // retrieve data from a form and set them to a storage
   useEffect(() => {
-    const excluded = excludeProperties(inputted, excludes);
-    const properties = JSON.stringify(excluded);
-    window.sessionStorage.setItem(key, properties);
-  }, [excludes, inputted, excludeProperties]);
+    const removed = excludes.reduce((acc, key) => {
+      // FIXME: want to remove disable/ignore
+      // eslint-disable-next-line
+      // @ts-ignore
+      delete acc[key];
+      return acc;
+    }, inputted);
+    const stringified = JSON.stringify(removed);
+    window.sessionStorage.setItem(key, stringified);
+  }, [excludes, inputted]);
 
   // delete data in a storage when a component is unmounted
   useEffect(() => {

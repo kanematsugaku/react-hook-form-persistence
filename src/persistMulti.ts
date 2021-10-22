@@ -1,17 +1,15 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
 import { useEffect, useState, useCallback } from 'react';
 
-export function useFormPersistMulti<T>(
-  useFormReturn: UseFormReturn<T>,
-  includes: (keyof T)[] = [],
-) {
+export function useFormPersistMulti<T>(useFormReturn: UseFormReturn<T>, includes: (keyof T)[]) {
   const {
     watch,
     setValue,
+    getValues,
     formState: { errors, isSubmitted },
   } = useFormReturn;
 
-  const key = '_RFHPM_';
+  const key = 'RFHP_M';
   const inputted = watch();
 
   const isValid = (arg: unknown): arg is Record<string, string> => {
@@ -19,38 +17,36 @@ export function useFormPersistMulti<T>(
     return type !== null && type === 'object';
   };
 
-  const includeProperties = useCallback(<K>(properties: K, keys: (keyof T)[] = []) => {
-    const included = {};
-    keys.forEach((key) => {
-      // FIXME: want to remove disable/ignore
-      // eslint-disable-next-line
-      // @ts-ignore
-      included[key] = properties[key]; // eslint-disable-line
-    });
-    return included;
-  }, []);
-
   // retrieve data from a storage and set them to a form
   useEffect(() => {
     const storaged = window.sessionStorage.getItem(key);
-    if (storaged !== null) {
-      const properties = JSON.parse(storaged); // eslint-disable-line
-      if (isValid(properties)) {
-        const included = includeProperties(properties, includes);
-        Object.entries(included).forEach(([key, value]) => {
-          // FIXME: want to remove assertions
-          setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
-        });
-      }
+    if (storaged === null) {
+      return;
     }
-  }, [includes, setValue, includeProperties]);
+    const properties = JSON.parse(storaged); // eslint-disable-line
+    if (isValid(properties)) {
+      const extracted = includes.reduce((acc, key) => {
+        // FIXME: want to remove disable/ignore
+        // eslint-disable-next-line
+        // @ts-ignore
+        acc[key] = properties[key]; // eslint-disable-line
+        return acc;
+      }, {});
+      Object.entries(extracted).forEach(([key, value]) => {
+        // FIXME: want to remove assertions
+        setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
+      });
+    }
+    // eslint-disable-next-line
+  }, [setValue]); // don't add "includes"
 
   // retrieve data from a form and set them to a storage
   useEffect(() => {
-    const included = includeProperties(inputted, includes);
-    const properties = JSON.stringify(included);
-    window.sessionStorage.setItem(key, properties);
-  }, [includes, inputted, includeProperties]);
+    const storaged = window.sessionStorage.getItem(key);
+    const properties = storaged !== null ? JSON.parse(storaged) : {}; // eslint-disable-line
+    const stringified = JSON.stringify({ ...properties, ...inputted });
+    window.sessionStorage.setItem(key, stringified);
+  }, [inputted]);
 
   // delete data in a storage
   const [isTriggered, setIsTriggered] = useState(false);
@@ -63,15 +59,13 @@ export function useFormPersistMulti<T>(
 
   // return true if all fields are filled
   const isFilled = () => {
-    const included = includeProperties(inputted, includes);
-    const values = Object.values(included);
+    const values = Object.values(getValues());
     return values.length !== 0 && values.every((value) => value !== '' && value !== undefined);
   };
 
   // return true if all fields has no error
   const hasNoError = () => {
-    const included = includeProperties(errors, includes);
-    return Object.keys(included).length === 0;
+    return Object.keys(errors).length === 0;
   };
 
   // before submit: return true if isFilled, after submit: return true if isValid
