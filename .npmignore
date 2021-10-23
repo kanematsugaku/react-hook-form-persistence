@@ -1,7 +1,0 @@
-/node_modules
-/development
-LICENSE
-CHANGELOG
-.gitignore
-tsconfig.json
-main.ts

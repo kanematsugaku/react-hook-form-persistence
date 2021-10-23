@@ -8,7 +8,16 @@ A very simple library for persisting react-hook-form.
 npm install react-hook-form-persistence
 ```
 
-## Example Usage
+## Usage
+
+`react-hook-form-persistence` has two methods. `single` and `multi`.
+
+- `single`: If you want to use the persisted data on only one page, use this one.
+- `multi`: If you want to use persisted data across multiple pages, use this one.
+
+## Example Usage: `single` or `multi`
+
+`single` and `multi` have the same interface.
 
 Just wrap a result of `useForm` which React Hook Form returns.
 
@@ -18,7 +27,7 @@ import useFormPersist from 'react-hook-form-persistence';
 
 const ExampleForm = () => {
   type FormField = { name: string; email: string; password: string };
-  const { register, handleSubmit } = useFormPersist(useForm<FormField>());
+  const { register, handleSubmit } = useFormPersist.single(useForm<FormField>());
   const onSubmit = (data: FormField) => console.log(data);
 
   return (
@@ -34,41 +43,21 @@ const ExampleForm = () => {
 export default ExampleForm;
 ```
 
-## Additional Example Usage
-
 ### Optional Arguments
 
-`react-hook-form-persistence` optionally takes a second argument as an object.
-
-#### Exclude fields
-
-If you want specific fields not to be persistent, specify them as `exclude`.
+If you want specific fields not to be persistent, specify them as the second argument.
 
 ```tsx
 type FormField = { name: string; email: string; password: string };
-const { register, handleSubmit } = useFormPersist(useForm<FormField>(), {
-  exclude: ['email', 'password'],
-});
-```
-
-#### Disable data deletion when unmounting a component
-
-By default, `react-hook-form-persistence` will delete persisted data when a component is unmounted. If you want to disable this process, specify it as `shouldUnpersist: false`.
-
-```tsx
-type FormField = { name: string; email: string; password: string };
-const { register, handleSubmit } = useFormPersist(useForm<FormField>(), {
-  shouldUnpersist: false,
-});
+const { register, handleSubmit } = useFormPersist.single(useForm<FormField>(), [
+  'email',
+  'password',
+]);
 ```
 
 ### Optional return values
 
 In addition to the result returned by `useForm`, useFormPersist returns some additional values.
-
-#### `unpersist: () => void`
-
-Call this function to delete persisted data whenever you want.
 
 #### `isFilled: boolean`
 
@@ -86,8 +75,8 @@ This value is true if all fields has no error. This validation includes excluded
 ```tsx
 const ExampleForm = () => {
   type FormField = { name: string };
-  const { register, handleSubmit, isFilled, hasNoError, canSubmit } = useFormPersist(
-    useForm<FormField>()
+  const { register, handleSubmit, isFilled, hasNoError, canSubmit } = useFormPersist.single(
+    useForm<FormField>(),
   );
   const onSubmit = (data: FormField) => console.log(data);
 
@@ -98,6 +87,29 @@ const ExampleForm = () => {
       <input type="submit" value="Submit if hasNoError" disabled={!hasNoError} />
       <input type="submit" value="Submit if canSubmit" disabled={!canSubmit} />
     </form>
+  );
+};
+```
+
+## Difference between `single` and `multi`
+
+- `single` will delete persisted data when a component is unmounted.
+- `multi` will not. Instead, this return additional function `unpersist`. Call this to delete persisted data whenever you want.
+
+```tsx
+const ExampleForm = () => {
+  type FormField = { name: string };
+  const { register, handleSubmit, unpersist } = useFormPersist.multi(useForm<FormField>());
+  const onSubmit = (data: FormField) => console.log(data);
+
+  return (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input {...register('name')} />
+        <button type="submit">Submit</button>
+      </form>
+      <button onClick={unpersist}>Clear persisted data</button>
+    </>
   );
 };
 ```

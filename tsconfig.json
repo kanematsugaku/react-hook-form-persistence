@@ -6,7 +6,7 @@
     "declaration": true,
     "declarationMap": true,
     "removeComments": true,
-    "outDir": "./lib"
+    "outDir": "./dist"
   },
-  "include": ["main.ts"]
+  "include": ["src"]
 }
