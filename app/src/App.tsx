@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import useFormPersist from 'react-hook-form-persistence';
+import useFormPersist from 'react-hook-form-persistence'; // need npm link
 
 export default function App() {
   type FormField = { persisted1: string; persisted2: string; unpersisted: string };
