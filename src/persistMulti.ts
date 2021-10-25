@@ -47,7 +47,6 @@ export function useFormPersistMulti<T>(
     // Create an object for the additional data to be storaged
     const removed = excludes.reduce((acc, key) => {
       // FIXME: want to remove disable/ignore
-      // eslint-disable-next-line
       // @ts-ignore
       delete acc[key];
       return acc;
