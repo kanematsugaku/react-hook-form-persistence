@@ -38,7 +38,6 @@ export function useFormPersistSingle<T>(
     const storage = getStorage();
     const removed = excludes.reduce((acc, key) => {
       // FIXME: want to remove disable/ignore
-      // eslint-disable-next-line
       // @ts-ignore
       delete acc[key];
       return acc;
