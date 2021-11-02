@@ -1,8 +1,8 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { isValid, isFilled, hasNoError, canSubmit } from './share';
 
-export function useFormPersistMulti<T>(
+export function useFormPersistMultiAuto<T>(
   useFormReturn: UseFormReturn<T>,
   excludes: (keyof T)[] = [],
 ) {
@@ -13,7 +13,7 @@ export function useFormPersistMulti<T>(
     formState: { errors, isSubmitted },
   } = useFormReturn;
 
-  const key = 'RFHP_M';
+  const key = 'RFHP_AU';
   const inputted = watch();
   const getStorage = () => window.sessionStorage;
   const getPathname = () => window.location.pathname;
@@ -59,16 +59,10 @@ export function useFormPersistMulti<T>(
   }, [excludes, inputted]);
 
   // delete data in a storage
-  const [isTriggered, setIsTriggered] = useState(false);
-  useEffect(() => {
-    if (isTriggered) {
-      return () => {
-        const storage = getStorage();
-        storage.removeItem(key);
-      };
-    }
-  }, [isTriggered]);
-  const unpersist = useCallback(() => setIsTriggered(true), []);
+  const unpersist = useCallback(() => {
+    const storage = getStorage();
+    storage.removeItem(key);
+  }, []);
 
   const isFilled_ = isFilled(getValues);
   const hasNoError_ = hasNoError(errors);
