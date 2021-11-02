@@ -13,7 +13,7 @@ export function useFormPersistSingle<T>(
     formState: { errors, isSubmitted },
   } = useFormReturn;
 
-  const key = 'RFHP_S';
+  const key = 'RFHP_SI';
   const inputted = watch();
   const getStorage = () => window.sessionStorage;
 

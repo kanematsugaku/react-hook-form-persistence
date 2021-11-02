@@ -1,9 +1,11 @@
-import { useFormPersistSingle } from './persistSingle';
-import { useFormPersistMulti } from './persistMulti';
+import { useFormPersistSingle } from './single';
+import { useFormPersistMultiAuto } from './auto';
+import { useFormPersistMultiSelf } from './self';
 
 const useFormPersist = {
   single: useFormPersistSingle,
-  multi: useFormPersistMulti,
+  auto: useFormPersistMultiAuto,
+  self: useFormPersistMultiSelf,
 };
 
 export default useFormPersist;
