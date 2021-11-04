@@ -1,3 +1,7 @@
+## 0.0.9 (November 4, 2021)
+
+- Add getPersisted.
+
 ## 0.0.8 (October 20, 2021)
 
 - Split to two methods.
