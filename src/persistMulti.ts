@@ -1,5 +1,5 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import { isValid, isFilled, hasNoError, canSubmit } from './share';
 
 export function useFormPersistMulti<T>(
@@ -59,16 +59,24 @@ export function useFormPersistMulti<T>(
   }, [excludes, inputted]);
 
   // delete data in a storage
-  const [isTriggered, setIsTriggered] = useState(false);
-  useEffect(() => {
-    if (isTriggered) {
-      return () => {
-        const storage = getStorage();
-        storage.removeItem(key);
-      };
+  const unPersist = useCallback(() => {
+    const storage = getStorage();
+    storage.removeItem(key);
+  }, []);
+
+  // retrieve all data from a storage and return them as an object
+  const getPersisted = useCallback(() => {
+    const storaged = getStorage().getItem(key);
+    if (storaged === null) {
+      return;
     }
-  }, [isTriggered]);
-  const unpersist = useCallback(() => setIsTriggered(true), []);
+    const parsed = JSON.parse(storaged) as Record<string, Record<string, unknown>>;
+    const values = Object.values(parsed);
+    const persisted = values.reduce((acc, obj) => {
+      return { ...acc, ...obj };
+    });
+    return persisted;
+  }, []);
 
   const isFilled_ = isFilled(getValues);
   const hasNoError_ = hasNoError(errors);
@@ -76,7 +84,8 @@ export function useFormPersistMulti<T>(
 
   return {
     ...useFormReturn,
-    unpersist,
+    unPersist,
+    getPersisted,
     isFilled: isFilled_,
     hasNoError: hasNoError_,
     canSubmit: canSubmit_,
