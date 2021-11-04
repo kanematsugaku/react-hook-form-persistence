@@ -1,6 +1,6 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
 import { useEffect } from 'react';
-import { isValid, isFilled, hasNoError, canSubmit } from './share';
+import { isValidRecord, isFilled, hasNoError, canSubmit } from './share';
 
 export function useFormPersistSingle<T>(
   useFormReturn: UseFormReturn<T>,
@@ -24,8 +24,8 @@ export function useFormPersistSingle<T>(
     if (storaged === null) {
       return;
     }
-    const parsed = JSON.parse(storaged); // eslint-disable-line
-    if (isValid(parsed)) {
+    const parsed: unknown = JSON.parse(storaged);
+    if (isValidRecord(parsed)) {
       Object.entries(parsed).forEach(([key, value]) => {
         // FIXME: want to remove assertions
         setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
