@@ -1,6 +1,6 @@
 import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
 import { useEffect, useCallback } from 'react';
-import { isValid, isFilled, hasNoError, canSubmit } from './share';
+import { isValidRecord, isValidRecords, isFilled, hasNoError, canSubmit } from './share';
 
 export function useFormPersistMulti<T>(
   useFormReturn: UseFormReturn<T>,
@@ -25,11 +25,11 @@ export function useFormPersistMulti<T>(
     if (storaged === null) {
       return;
     }
-    const parsed = JSON.parse(storaged); // eslint-disable-line
-    if (isValid(parsed)) {
+    const parsed: unknown = JSON.parse(storaged);
+    if (isValidRecord(parsed)) {
       const pathname = getPathname();
       const extracted = parsed[pathname];
-      if (isValid(extracted)) {
+      if (isValidRecord(extracted)) {
         Object.entries(extracted).forEach(([key, value]) => {
           // FIXME: want to remove assertions
           setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
@@ -70,12 +70,16 @@ export function useFormPersistMulti<T>(
     if (storaged === null) {
       return;
     }
-    const parsed = JSON.parse(storaged) as Record<string, Record<string, unknown>>;
-    const values = Object.values(parsed);
-    const persisted = values.reduce((acc, obj) => {
-      return { ...acc, ...obj };
-    });
-    return persisted;
+    const parsed: unknown = JSON.parse(storaged);
+    if (isValidRecord(parsed)) {
+      const values = Object.values(parsed);
+      if (isValidRecords(values)) {
+        const persisted = values.reduce((acc, obj) => {
+          return { ...acc, ...obj };
+        });
+        return persisted;
+      }
+    }
   }, []);
 
   const isFilled_ = isFilled(getValues);

@@ -1,9 +1,17 @@
 import type { UseFormGetValues, FormState } from 'react-hook-form';
 
 /** type guard */
-export const isValid = (arg: unknown): arg is Record<string, unknown> => {
+export const isValidRecord = (arg: unknown): arg is Record<string, unknown> => {
   const type = typeof arg;
   return type !== null && type === 'object';
+};
+
+/** type guard */
+export const isValidRecords = (args: unknown[]): args is Record<string, unknown>[] => {
+  return args.every((arg) => {
+    const type = typeof arg;
+    return type !== null && type === 'object';
+  });
 };
 
 /** return true if all fields are filled */
