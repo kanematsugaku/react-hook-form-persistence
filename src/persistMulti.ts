@@ -59,16 +59,16 @@ export function useFormPersistMulti<T>(
   }, [excludes, inputted]);
 
   // delete data in a storage
-  const unPersist = useCallback(() => {
+  const unpersist = useCallback(() => {
     const storage = getStorage();
     storage.removeItem(key);
   }, []);
 
   // retrieve all data from a storage and return them as an object
-  const getPersisted = useCallback(() => {
+  const getPersisted = useCallback(<U>() => {
     const storaged = getStorage().getItem(key);
     if (storaged === null) {
-      return;
+      return null;
     }
     const parsed: unknown = JSON.parse(storaged);
     if (isValidRecord(parsed)) {
@@ -77,9 +77,10 @@ export function useFormPersistMulti<T>(
         const persisted = values.reduce((acc, obj) => {
           return { ...acc, ...obj };
         });
-        return persisted;
+        return persisted as U;
       }
     }
+    return null;
   }, []);
 
   const isFilled_ = isFilled(getValues);
@@ -88,7 +89,7 @@ export function useFormPersistMulti<T>(
 
   return {
     ...useFormReturn,
-    unPersist,
+    unpersist,
     getPersisted,
     isFilled: isFilled_,
     hasNoError: hasNoError_,
