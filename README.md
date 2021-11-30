@@ -55,7 +55,7 @@ const { register, handleSubmit } = useFormPersist.single(useForm<FormField>(), [
 ]);
 ```
 
-### Optional return values
+### Return values
 
 In addition to the result returned by `useForm`, useFormPersist returns some additional values.
 
@@ -93,8 +93,18 @@ const ExampleForm = () => {
 
 ## Difference between `single` and `multi`
 
-- `single` will delete persisted data when a component is unmounted.
-- `multi` will not. Instead, this return additional function `unpersist`. Call this to delete persisted data whenever you want.
+### Features of `single`
+
+`single` will delete persisted data when a component is unmounted.
+
+### Features of `multi`
+
+`multi` will not automatically delete persisted data.
+
+`multi` return additional function `unpersist` and `getPersisted`.
+
+- `unpersist`: Call this to delete persisted data whenever you want.
+- `getPersisted`: Call this to retrieve persisted data whenever you want.
 
 ```tsx
 const ExampleForm = () => {

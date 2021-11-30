@@ -1,3 +1,8 @@
+## 0.0.10 (November 30, 2021)
+
+- update getPersisted.
+- rename unPersist to unpersist.
+
 ## 0.0.9 (November 4, 2021)
 
 - Add getPersisted.
