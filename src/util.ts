@@ -1,13 +1,24 @@
-/** type guard */
+/** Type guard */
 export const isValidRecord = (arg: unknown): arg is Record<string, unknown> => {
-  const type = typeof arg;
-  return type !== null && type === 'object';
+  return arg !== null && typeof arg === 'object';
 };
 
-/** type guard */
+/** Type guard */
 export const isValidRecords = (args: unknown[]): args is Record<string, unknown>[] => {
-  return args.every((arg) => {
-    const type = typeof arg;
-    return type !== null && type === 'object';
-  });
+  return args.every(isValidRecord);
+};
+
+/** Try to parse to date, if fails return the original argument. */
+export const tryParseDate = (arg: unknown) => {
+  if (typeof arg !== 'string') {
+    return arg;
+  }
+  const maybeDate = new Date(arg);
+  const invalidDate = isNaN(maybeDate.getTime());
+  return invalidDate ? arg : maybeDate;
+};
+
+/** Convert objects in array to single object. */
+export const objectify = (array: Array<Record<string, unknown>>) => {
+  return array.reduce((acc, val) => ({ ...acc, ...val }));
 };

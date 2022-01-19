@@ -40,7 +40,7 @@ export function useFormPersistSinglePage<T extends FieldValues, U extends string
   useEffect(() => {
     const storage = getStorage();
     const removed = excludes.reduce((acc, key) => {
-      // FIXME: Want to remove disable/ignore
+      // FIXME: Want to remove ts-ignore
       // @ts-ignore
       delete acc[key];
       return acc;

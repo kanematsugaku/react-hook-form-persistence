@@ -12,14 +12,11 @@ npm install react-hook-form-persistence
 
 `react-hook-form-persistence` has three methods. `single`, `pages` and `named`.
 
-- `single`: is appropriate in the following cases:
-  - If you want to make data persistent on only one page.
-- `pages`: is appropriate in the following cases:
-  - If you want to make data persistent across multiple pages.
-- `named`: is appropriate in the following cases:
-  - If you want to make data persistent across multiple pages, and want to update the same data field on multiple pages.
+Use cases for each are as follows:
 
-Each method have almost all the same interface.
+- `single`: If you want to make data persistent on only one page.
+- `pages`: If you want to make data persistent across multiple pages.
+- `named`: If you want to make data persistent across multiple pages, and want to update the same data field on multiple pages.
 
 The differences between them are discussed later, but in general, they are used as follows.
 
@@ -132,7 +129,7 @@ const ExampleForm = () => {
 
 When using `pages`, persisted data on one page cannot be updated on other pages. If this is inconvenient, use `named`.
 
-In `named`, You will need to provide the key name as the first argument. You can update the same data from either page by specifying the same key name.
+In `named`, you will need to provide the key name as the first argument. You can update the same data from either page by specifying the same key name.
 
 **`pages`**
 
