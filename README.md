@@ -10,16 +10,22 @@ npm install react-hook-form-persistence
 
 ## Usage
 
-`react-hook-form-persistence` has two methods. `single` and `multi`.
+`react-hook-form-persistence` has three methods. `single`, `pages` and `named`.
 
-- `single`: If you want to use the persisted data on only one page, use this one.
-- `multi`: If you want to use persisted data across multiple pages, use this one.
+- `single`: is appropriate in the following cases:
+  - If you want to make data persistent on only one page.
+- `pages`: is appropriate in the following cases:
+  - If you want to make data persistent across multiple pages.
+- `named`: is appropriate in the following cases:
+  - If you want to make data persistent across multiple pages, and want to update the same data field on multiple pages.
 
-## Example Usage: `single` or `multi`
+Each method have almost all the same interface.
 
-`single` and `multi` have the same interface.
+The differences between them are discussed later, but in general, they are used as follows.
 
-Just wrap a result of `useForm` which React Hook Form returns.
+**Just wrap a result of `useForm` which React Hook Form returns.**
+
+_(In the following example, `single` is used.)_
 
 ```tsx
 import { useForm } from 'react-hook-form';
@@ -45,7 +51,7 @@ export default ExampleForm;
 
 ### Optional Arguments
 
-If you want specific fields not to be persistent, specify them as the second argument.
+If you want specific fields not to be persistent, specify them as the the next argument of the result of `useForm`.
 
 ```tsx
 type FormField = { name: string; email: string; password: string };
@@ -57,7 +63,7 @@ const { register, handleSubmit } = useFormPersist.single(useForm<FormField>(), [
 
 ### Return values
 
-In addition to the result returned by `useForm`, useFormPersist returns some additional values.
+In addition to the result returned by `useForm`, useFormPersist returns some additional values regarding validation.
 
 #### `isFilled: boolean`
 
@@ -91,17 +97,15 @@ const ExampleForm = () => {
 };
 ```
 
-## Difference between `single` and `multi`
+## Differences between each method
 
-### Features of `single`
+### `single`
 
-`single` will delete persisted data when a component is unmounted.
+`single` deletes the persisted data when the component is unmounted. So this will keep the data when the page is reloaded, and discard them when the user moves to another page.
 
-### Features of `multi`
+### `pages` and `named`
 
-`multi` will not automatically delete persisted data.
-
-`multi` return additional function `unpersist` and `getPersisted`.
+Neither will automatically delete persisted data. Instead, they return additional function `unpersist` and `getPersisted`.
 
 - `unpersist`: Call this to delete persisted data whenever you want.
 - `getPersisted`: Call this to retrieve persisted data whenever you want.
@@ -109,7 +113,7 @@ const ExampleForm = () => {
 ```tsx
 const ExampleForm = () => {
   type FormField = { name: string };
-  const { register, handleSubmit, unpersist } = useFormPersist.multi(useForm<FormField>());
+  const { register, handleSubmit, unpersist } = useFormPersist.pages(useForm<FormField>());
   const onSubmit = (data: FormField) => console.log(data);
 
   return (
@@ -122,4 +126,25 @@ const ExampleForm = () => {
     </>
   );
 };
+```
+
+#### Difference between `pages` and `named`
+
+When using `pages`, persisted data on one page cannot be updated on other pages. If this is inconvenient, use `named`.
+
+In `named`, You will need to provide the key name as the first argument. You can update the same data from either page by specifying the same key name.
+
+**`pages`**
+
+```tsx
+const { register, handleSubmit, unpersist } = useFormPersist.pages(useForm<FormField>());
+```
+
+**`named`**
+
+```tsx
+const { register, handleSubmit, unpersist } = useFormPersist.pages(
+  'userData',
+  useForm<FormField>(),
+);
 ```
