@@ -1,35 +1,38 @@
-import type { UseFormGetValues, FormState } from 'react-hook-form';
+import type { UseFormGetValues, FormState, UseFormReturn, FieldValues } from 'react-hook-form';
 
-/** type guard */
-export const isValidRecord = (arg: unknown): arg is Record<string, unknown> => {
-  const type = typeof arg;
-  return type !== null && type === 'object';
-};
-
-/** type guard */
-export const isValidRecords = (args: unknown[]): args is Record<string, unknown>[] => {
-  return args.every((arg) => {
-    const type = typeof arg;
-    return type !== null && type === 'object';
-  });
-};
-
-/** return true if all fields are filled */
-export const isFilled = <T>(getValues: UseFormGetValues<T>) => {
+/** Return true if all fields are filled. */
+const isFilled = <T>(getValues: UseFormGetValues<T>) => {
   const values = Object.values(getValues());
   return values.length !== 0 && values.every((value) => value !== '' && value !== undefined);
 };
 
-/** return true if all fields has no error */
-export const hasNoError = (errors: Record<string, unknown>) => {
+/** Return true if all fields has no error. */
+const hasNoError = (errors: Record<string, unknown>) => {
   return Object.keys(errors).length === 0;
 };
 
-/** before submit: return true if isFilled, after submit: return true if isValid */
-export const canSubmit = <T>(
+/** Before submit: return true if isFilled. After submit: return true if isValid. */
+const canSubmit = <T>(
   isSubmitted: FormState<T>['isSubmitted'],
   isFilled_: ReturnType<typeof isFilled>,
   hasNoError_: ReturnType<typeof hasNoError>,
 ) => {
   return isSubmitted ? hasNoError_ : isFilled_;
+};
+
+export const validate = <T extends FieldValues>(useFormReturn: UseFormReturn<T>) => {
+  const {
+    getValues,
+    formState: { errors, isSubmitted },
+  } = useFormReturn;
+
+  const isFilled_ = isFilled(getValues);
+  const hasNoError_ = hasNoError(errors);
+  const canSubmit_ = canSubmit(isSubmitted, isFilled_, hasNoError_);
+
+  return {
+    isFilled: isFilled_,
+    hasNoError: hasNoError_,
+    canSubmit: canSubmit_,
+  };
 };

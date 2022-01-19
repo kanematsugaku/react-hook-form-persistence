@@ -1,48 +1,52 @@
-import type { UseFormReturn, Path, PathValue, UnpackNestedValue } from 'react-hook-form';
+import type {
+  UseFormReturn,
+  FieldValues,
+  Path,
+  PathValue,
+  UnpackNestedValue,
+} from 'react-hook-form';
 import { useEffect, useCallback } from 'react';
-import { isValidRecord, isValidRecords, isFilled, hasNoError, canSubmit } from './share';
+import { isValidRecord, isValidRecords } from '../util';
+import { validate } from '../share';
+import type { NonEmptyString } from '../types';
 
-export function useFormPersistMulti<T>(
+export function useFormPersistMultiplePages<T extends FieldValues, U extends string>(
   useFormReturn: UseFormReturn<T>,
   excludes: (keyof T)[] = [],
+  ROOT_KEY: string,
+  dataKey?: NonEmptyString<U>,
 ) {
-  const {
-    watch,
-    setValue,
-    getValues,
-    formState: { errors, isSubmitted },
-  } = useFormReturn;
+  const { watch, setValue } = useFormReturn;
 
-  const key = 'RFHP_M';
   const inputted = watch();
   const getStorage = () => window.sessionStorage;
   const getPathname = () => window.location.pathname;
 
-  // retrieve data from a storage and set them to a form
+  // Retrieve data from a storage and set them to a form
   useEffect(() => {
     const storage = getStorage();
-    const storaged = storage.getItem(key);
+    const storaged = storage.getItem(ROOT_KEY);
     if (storaged === null) {
       return;
     }
     const parsed: unknown = JSON.parse(storaged);
     if (isValidRecord(parsed)) {
-      const pathname = getPathname();
-      const extracted = parsed[pathname];
+      const key = dataKey || getPathname();
+      const extracted = parsed[key];
       if (isValidRecord(extracted)) {
         Object.entries(extracted).forEach(([key, value]) => {
-          // FIXME: want to remove assertions
+          // FIXME: Want to remove assertions
           setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
         });
       }
     }
-  }, [setValue]);
+  }, [ROOT_KEY, dataKey, setValue]);
 
-  // retrieve data from a form and set them to a storage
+  // Retrieve data from a form and set them to a storage
   useEffect(() => {
     const storage = getStorage();
-    // create an object from already storaged data
-    const storaged = storage.getItem(key);
+    // Create an object from already storaged data
+    const storaged = storage.getItem(ROOT_KEY);
     const existed = storaged !== null ? JSON.parse(storaged) : {}; // eslint-disable-line
     // Create an object for the additional data to be storaged
     const removed = excludes.reduce((acc, key) => {
@@ -51,22 +55,22 @@ export function useFormPersistMulti<T>(
       delete acc[key];
       return acc;
     }, inputted);
-    const pathname = getPathname();
-    const added = { [pathname]: removed };
-    // merge and storage them
+    const key = dataKey || getPathname();
+    const added = { [key]: removed };
+    // Merge and storage them
     const stringified = JSON.stringify({ ...existed, ...added });
-    storage.setItem(key, stringified);
-  }, [excludes, inputted]);
+    storage.setItem(ROOT_KEY, stringified);
+  }, [ROOT_KEY, dataKey, excludes, inputted]);
 
-  // delete data in a storage
+  // Delete data in a storage
   const unpersist = useCallback(() => {
     const storage = getStorage();
-    storage.removeItem(key);
-  }, []);
+    storage.removeItem(ROOT_KEY);
+  }, [ROOT_KEY]);
 
-  // retrieve all data from a storage and return them as an object
-  const getPersisted = useCallback(<U>() => {
-    const storaged = getStorage().getItem(key);
+  // Retrieve all data from a storage and return them as an object
+  const getPersisted = useCallback(<V>() => {
+    const storaged = getStorage().getItem(ROOT_KEY);
     if (storaged === null) {
       return null;
     }
@@ -77,22 +81,16 @@ export function useFormPersistMulti<T>(
         const persisted = values.reduce((acc, obj) => {
           return { ...acc, ...obj };
         });
-        return persisted as U;
+        return persisted as V;
       }
     }
     return null;
-  }, []);
-
-  const isFilled_ = isFilled(getValues);
-  const hasNoError_ = hasNoError(errors);
-  const canSubmit_ = canSubmit(isSubmitted, isFilled_, hasNoError_);
+  }, [ROOT_KEY]);
 
   return {
     ...useFormReturn,
     unpersist,
     getPersisted,
-    isFilled: isFilled_,
-    hasNoError: hasNoError_,
-    canSubmit: canSubmit_,
+    ...validate(useFormReturn),
   };
 }

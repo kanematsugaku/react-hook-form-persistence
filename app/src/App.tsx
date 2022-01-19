@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form';
-import useFormPersist from 'react-hook-form-persistence'; // need npm link
+import useFormPersist from './lib/main';
 
 export default function App() {
   type FormField = { persisted1: string; persisted2: string; unpersisted: string };
@@ -17,6 +17,7 @@ export default function App() {
 
   return (
     <>
+      <h1>React Hook Form Persistence</h1>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
           Persisted1: <input {...register('persisted1', { required: true })} />

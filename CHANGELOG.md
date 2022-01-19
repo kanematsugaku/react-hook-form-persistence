@@ -1,3 +1,9 @@
+## 0.0.11 (January 19, 2022)
+
+- Rename `multi` to `pages`.
+- Add a new method `named`.
+- Refactoring.
+
 ## 0.0.10 (November 30, 2021)
 
 - update getPersisted.

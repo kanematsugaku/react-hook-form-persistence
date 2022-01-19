@@ -1,9 +1,9 @@
-import { useFormPersistSingle } from './persistSingle';
-import { useFormPersistMulti } from './persistMulti';
+import { useFormPersistSingle } from './functions/useFormPersistSingle';
+import { useFormPersistPages } from './functions/useFormPersistPages';
+import { useFormPersistNamed } from './functions/useFormPersistNamed';
 
-const useFormPersist = {
+export default {
   single: useFormPersistSingle,
-  multi: useFormPersistMulti,
+  pages: useFormPersistPages,
+  named: useFormPersistNamed,
 };
-
-export default useFormPersist;
