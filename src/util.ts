@@ -18,7 +18,7 @@ export const tryParseDate = (arg: unknown) => {
   return invalidDate ? arg : maybeDate;
 };
 
-/** Convert objects in array to single object. */
+/** Convert objects in array to a single object. */
 export const objectify = (array: Array<Record<string, unknown>>) => {
   return array.reduce((acc, val) => ({ ...acc, ...val }));
 };
