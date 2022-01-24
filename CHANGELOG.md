@@ -1,3 +1,8 @@
+## 0.0.13 (January 24, 2022)
+
+- Update Date object conversion.
+- Refactoring.
+
 ## 0.0.12 (January 19, 2022)
 
 - Add Date object conversion.

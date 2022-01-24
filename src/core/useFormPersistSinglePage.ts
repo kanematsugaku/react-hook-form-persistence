@@ -6,13 +6,13 @@ import type {
   UnpackNestedValue,
 } from 'react-hook-form';
 import { useEffect } from 'react';
-import { isValidRecord } from '../util';
+import { isValidRecord, removeProperties, tryParseDate } from '../util';
 import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
 export function useFormPersistSinglePage<T extends FieldValues, U extends string>(
   useFormReturn: UseFormReturn<T>,
-  excludes: (keyof T)[] = [],
+  excludes: string[] = [],
   ROOT_KEY: NonEmptyString<U>,
 ) {
   const { watch, setValue } = useFormReturn;
@@ -28,21 +28,18 @@ export function useFormPersistSinglePage<T extends FieldValues, U extends string
     }
     const parsed: unknown = JSON.parse(storaged);
     if (isValidRecord(parsed)) {
-      Object.entries(parsed).forEach(([key, value]) => {
+      Object.entries(parsed).forEach(([k, v]) => {
+        // Convert the value to Date if possible.
+        const datefied = tryParseDate(v);
         // FIXME: Want to remove assertions
-        setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
+        setValue(k as Path<T>, datefied as UnpackNestedValue<PathValue<T, Path<T>>>);
       });
     }
   }, [ROOT_KEY, setValue]);
 
   // Retrieve data from a form and set them to a storage
   useEffect(() => {
-    const removed = excludes.reduce((acc, key) => {
-      // FIXME: Want to remove ts-ignore
-      // @ts-ignore
-      delete acc[key];
-      return acc;
-    }, inputted);
+    const removed = removeProperties(inputted, excludes);
     const stringified = JSON.stringify(removed);
     getStorage().setItem(ROOT_KEY, stringified);
   }, [ROOT_KEY, excludes, inputted]);
