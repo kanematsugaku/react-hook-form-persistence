@@ -5,8 +5,8 @@ import type {
   PathValue,
   UnpackNestedValue,
 } from 'react-hook-form';
-import { useEffect, useCallback } from 'react';
-import { isValidRecord, isValidRecords } from '../util';
+import { useEffect, useCallback, useMemo } from 'react';
+import { isValidRecord, isValidRecords, objectify, tryParseDate } from '../util';
 import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
@@ -21,11 +21,11 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
   const inputted = watch();
   const getStorage = () => window.sessionStorage;
   const getPathname = () => window.location.pathname;
+  const emptyObject: Record<string, never> = useMemo(() => ({}), []);
 
   // Retrieve data from a storage and set them to a form
   useEffect(() => {
-    const storage = getStorage();
-    const storaged = storage.getItem(ROOT_KEY);
+    const storaged = getStorage().getItem(ROOT_KEY);
     if (storaged === null) {
       return;
     }
@@ -44,48 +44,51 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
 
   // Retrieve data from a form and set them to a storage
   useEffect(() => {
-    const storage = getStorage();
     // Create an object from already storaged data
+    const storage = getStorage();
     const storaged = storage.getItem(ROOT_KEY);
-    const existed = storaged !== null ? JSON.parse(storaged) : {}; // eslint-disable-line
-    // Create an object for the additional data to be storaged
-    const removed = excludes.reduce((acc, key) => {
-      // FIXME: want to remove disable/ignore
-      // @ts-ignore
-      delete acc[key];
-      return acc;
-    }, inputted);
-    const key = dataKey || getPathname();
-    const added = { [key]: removed };
-    // Merge and storage them
-    const stringified = JSON.stringify({ ...existed, ...added });
-    storage.setItem(ROOT_KEY, stringified);
-  }, [ROOT_KEY, dataKey, excludes, inputted]);
+    const existed: unknown = storaged === null ? emptyObject : JSON.parse(storaged);
+    if (isValidRecord(existed)) {
+      // Create an object for the additional data to be storaged
+      const removed = excludes.reduce((acc, key) => {
+        // FIXME: want to remove ts-ignore
+        // @ts-ignore
+        delete acc[key];
+        return acc;
+      }, inputted);
+      const key = dataKey || getPathname();
+      const added = { [key]: removed };
+      // Merge and storage them
+      const stringified = JSON.stringify({ ...existed, ...added });
+      storage.setItem(ROOT_KEY, stringified);
+    }
+  }, [ROOT_KEY, dataKey, emptyObject, excludes, inputted]);
 
   // Delete data in a storage
   const unpersist = useCallback(() => {
-    const storage = getStorage();
-    storage.removeItem(ROOT_KEY);
+    getStorage().removeItem(ROOT_KEY);
   }, [ROOT_KEY]);
 
   // Retrieve all data from a storage and return them as an object
-  const getPersisted = useCallback(<V>() => {
+  const getPersisted = useCallback(<V extends FieldValues>() => {
     const storaged = getStorage().getItem(ROOT_KEY);
     if (storaged === null) {
-      return null;
+      return emptyObject;
     }
     const parsed: unknown = JSON.parse(storaged);
     if (isValidRecord(parsed)) {
-      const values = Object.values(parsed);
-      if (isValidRecords(values)) {
-        const persisted = values.reduce((acc, obj) => {
-          return { ...acc, ...obj };
-        });
-        return persisted as V;
+      const extracted = Object.values(parsed);
+      if (isValidRecords(extracted)) {
+        const obj = objectify(extracted);
+        // Convert the value to Date if possible.
+        const datefied = Object.entries(obj).reduce((acc, [k, v]) => {
+          return { ...acc, [k]: tryParseDate(v) };
+        }, {} as Record<string, unknown>);
+        return datefied as V;
       }
     }
-    return null;
-  }, [ROOT_KEY]);
+    return emptyObject;
+  }, [ROOT_KEY, emptyObject]);
 
   return {
     ...useFormReturn,

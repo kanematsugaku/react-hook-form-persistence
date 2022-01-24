@@ -1,3 +1,8 @@
+## 0.0.12 (January 19, 2022)
+
+- Add Date object conversion.
+- Bug fix.
+
 ## 0.0.11 (January 19, 2022)
 
 - Rename `multi` to `pages`.

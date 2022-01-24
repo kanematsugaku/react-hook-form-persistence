@@ -22,8 +22,7 @@ export function useFormPersistSinglePage<T extends FieldValues, U extends string
 
   // Retrieve data from a storage and set them to a form
   useEffect(() => {
-    const storage = getStorage();
-    const storaged = storage.getItem(ROOT_KEY);
+    const storaged = getStorage().getItem(ROOT_KEY);
     if (storaged === null) {
       return;
     }
@@ -38,22 +37,20 @@ export function useFormPersistSinglePage<T extends FieldValues, U extends string
 
   // Retrieve data from a form and set them to a storage
   useEffect(() => {
-    const storage = getStorage();
     const removed = excludes.reduce((acc, key) => {
-      // FIXME: Want to remove disable/ignore
+      // FIXME: Want to remove ts-ignore
       // @ts-ignore
       delete acc[key];
       return acc;
     }, inputted);
     const stringified = JSON.stringify(removed);
-    storage.setItem(ROOT_KEY, stringified);
+    getStorage().setItem(ROOT_KEY, stringified);
   }, [ROOT_KEY, excludes, inputted]);
 
   // Delete data in a storage when a component is unmounted
   useEffect(() => {
     return () => {
-      const storage = getStorage();
-      storage.removeItem(ROOT_KEY);
+      getStorage().removeItem(ROOT_KEY);
     };
   }, [ROOT_KEY]);
 
