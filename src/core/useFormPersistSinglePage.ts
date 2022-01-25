@@ -12,7 +12,7 @@ import type { NonEmptyString } from '../types';
 
 export function useFormPersistSinglePage<T extends FieldValues, U extends string>(
   useFormReturn: UseFormReturn<T>,
-  excludes: string[] = [],
+  excludes: Extract<keyof T, string>[] = [],
   ROOT_KEY: NonEmptyString<U>,
 ) {
   const { watch, setValue } = useFormReturn;
