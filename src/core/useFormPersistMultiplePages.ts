@@ -19,7 +19,7 @@ import type { NonEmptyString } from '../types';
 
 export function useFormPersistMultiplePages<T extends FieldValues, U extends string>(
   useFormReturn: UseFormReturn<T>,
-  excludes: string[] = [],
+  excludes: Extract<keyof T, string>[] = [],
   ROOT_KEY: string,
   dataKey?: NonEmptyString<U>,
 ) {
