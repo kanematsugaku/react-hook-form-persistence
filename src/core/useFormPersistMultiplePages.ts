@@ -6,13 +6,20 @@ import type {
   UnpackNestedValue,
 } from 'react-hook-form';
 import { useEffect, useCallback, useMemo } from 'react';
-import { isValidRecord, isValidRecords, objectify, tryParseDate } from '../util';
+import {
+  isValidRecord,
+  isValidRecords,
+  removeProperties,
+  objectify,
+  processValues,
+  tryParseDate,
+} from '../util';
 import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
 export function useFormPersistMultiplePages<T extends FieldValues, U extends string>(
   useFormReturn: UseFormReturn<T>,
-  excludes: (keyof T)[] = [],
+  excludes: string[] = [],
   ROOT_KEY: string,
   dataKey?: NonEmptyString<U>,
 ) {
@@ -34,9 +41,11 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
       const key = dataKey || getPathname();
       const extracted = parsed[key];
       if (isValidRecord(extracted)) {
-        Object.entries(extracted).forEach(([key, value]) => {
+        Object.entries(extracted).forEach(([k, v]) => {
+          // Convert the value to Date if possible.
+          const datefied = tryParseDate(v);
           // FIXME: Want to remove assertions
-          setValue(key as Path<T>, value as UnpackNestedValue<PathValue<T, Path<T>>>);
+          setValue(k as Path<T>, datefied as UnpackNestedValue<PathValue<T, Path<T>>>);
         });
       }
     }
@@ -50,12 +59,7 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
     const existed: unknown = storaged === null ? emptyObject : JSON.parse(storaged);
     if (isValidRecord(existed)) {
       // Create an object for the additional data to be storaged
-      const removed = excludes.reduce((acc, key) => {
-        // FIXME: want to remove ts-ignore
-        // @ts-ignore
-        delete acc[key];
-        return acc;
-      }, inputted);
+      const removed = removeProperties(inputted, excludes);
       const key = dataKey || getPathname();
       const added = { [key]: removed };
       // Merge and storage them
@@ -79,11 +83,9 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
     if (isValidRecord(parsed)) {
       const extracted = Object.values(parsed);
       if (isValidRecords(extracted)) {
-        const obj = objectify(extracted);
         // Convert the value to Date if possible.
-        const datefied = Object.entries(obj).reduce((acc, [k, v]) => {
-          return { ...acc, [k]: tryParseDate(v) };
-        }, {} as Record<string, unknown>);
+        const object = objectify(extracted);
+        const datefied = processValues(object, tryParseDate);
         return datefied as V;
       }
     }
