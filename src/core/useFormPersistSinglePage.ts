@@ -6,7 +6,7 @@ import type {
   UnpackNestedValue,
 } from 'react-hook-form';
 import { useEffect } from 'react';
-import { isValidRecord, removeProperties, tryParseDate } from '../util';
+import { isValidRecord, removeProperties } from '../util';
 import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
@@ -29,10 +29,8 @@ export function useFormPersistSinglePage<T extends FieldValues, U extends string
     const parsed: unknown = JSON.parse(storaged);
     if (isValidRecord(parsed)) {
       Object.entries(parsed).forEach(([k, v]) => {
-        // Convert the value to Date if possible.
-        const datefied = tryParseDate(v);
         // FIXME: Want to remove assertions
-        setValue(k as Path<T>, datefied as UnpackNestedValue<PathValue<T, Path<T>>>);
+        setValue(k as Path<T>, v as UnpackNestedValue<PathValue<T, Path<T>>>);
       });
     }
   }, [ROOT_KEY, setValue]);
