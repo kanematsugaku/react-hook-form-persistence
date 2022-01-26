@@ -6,14 +6,7 @@ import type {
   UnpackNestedValue,
 } from 'react-hook-form';
 import { useEffect, useCallback, useMemo } from 'react';
-import {
-  isValidRecord,
-  isValidRecords,
-  removeProperties,
-  objectify,
-  processValues,
-  tryParseDate,
-} from '../util';
+import { isValidRecord, isValidRecords, removeProperties, objectify } from '../util';
 import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
@@ -42,10 +35,8 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
       const extracted = parsed[key];
       if (isValidRecord(extracted)) {
         Object.entries(extracted).forEach(([k, v]) => {
-          // Convert the value to Date if possible.
-          const datefied = tryParseDate(v);
           // FIXME: Want to remove assertions
-          setValue(k as Path<T>, datefied as UnpackNestedValue<PathValue<T, Path<T>>>);
+          setValue(k as Path<T>, v as UnpackNestedValue<PathValue<T, Path<T>>>);
         });
       }
     }
@@ -83,10 +74,8 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
     if (isValidRecord(parsed)) {
       const extracted = Object.values(parsed);
       if (isValidRecords(extracted)) {
-        // Convert the value to Date if possible.
         const object = objectify(extracted);
-        const datefied = processValues(object, tryParseDate);
-        return datefied as V;
+        return object as V;
       }
     }
     return emptyObject;

@@ -1,3 +1,7 @@
+## 0.0.15 (January 26, 2022)
+
+- Remove Date object conversion.
+
 ## 0.0.14 (January 25, 2022)
 
 - Refine typedef.

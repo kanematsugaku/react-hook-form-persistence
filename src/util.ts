@@ -20,23 +20,3 @@ export const removeProperties = (object: Record<string, unknown>, keys: string[]
 export const objectify = (array: Array<Record<string, unknown>>) => {
   return array.reduce((acc, val) => ({ ...acc, ...val }));
 };
-
-/** Execute the callback function on values of the object. */
-export const processValues = (
-  object: Record<string, unknown>,
-  callback: (arg: unknown) => unknown,
-) => {
-  return Object.entries(object).reduce((acc, [k, v]) => {
-    return { ...acc, [k]: callback(v) };
-  }, {} as typeof object);
-};
-
-/** Try to parse to date, if fails return the original argument. */
-export const tryParseDate = (arg: unknown) => {
-  if (typeof arg !== 'string') {
-    return arg;
-  }
-  const maybeDate = new Date(arg);
-  const invalidDate = isNaN(maybeDate.getTime());
-  return invalidDate ? arg : maybeDate;
-};
