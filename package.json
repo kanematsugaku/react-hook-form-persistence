@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form-persistence",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "A very simple library for persisting react-hook-form.",
   "license": "MIT",
   "main": "./dist/main.js",
@@ -41,9 +41,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "copy": "cp -r src/* app/src/lib",
-    "link": "npm run build && npm link && cd app && npm link react-hook-form-persistence",
-    "unlink": "cd app && npm unlink react-hook-form-persistence && cd .. && npm unlink react-hook-form-persistence && npm uninstall --g react-hook-form-persistence",
+    "copy": "cp -r src/* example/src/lib",
+    "link": "npm run build && npm link && cd example && npm link react-hook-form-persistence",
+    "unlink": "cd example && npm unlink react-hook-form-persistence && cd .. && npm unlink react-hook-form-persistence && npm uninstall --g react-hook-form-persistence",
     "prepublishOnly": "npm run build",
     "lint:tsc": "tsc --noEmit",
     "lint:eslint": "eslint src --ext .js,.jsx,.ts,.tsx",

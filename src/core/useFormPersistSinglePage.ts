@@ -6,8 +6,8 @@ import type {
   UnpackNestedValue,
 } from 'react-hook-form';
 import { useEffect } from 'react';
+import { useValidate } from './useValidate';
 import { isValidRecord, removeProperties } from '../util';
-import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
 export function useFormPersistSinglePage<T extends FieldValues, U extends string>(
@@ -51,6 +51,6 @@ export function useFormPersistSinglePage<T extends FieldValues, U extends string
 
   return {
     ...useFormReturn,
-    ...validate(useFormReturn),
+    ...useValidate(useFormReturn),
   };
 }

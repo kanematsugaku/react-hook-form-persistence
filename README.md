@@ -62,15 +62,15 @@ const { register, handleSubmit } = useFormPersist.single(useForm<FormField>(), [
 
 In addition to the result returned by `useForm`, useFormPersist returns some additional values regarding validation.
 
-#### `isFilled: boolean`
+#### Variable | `isFilled: boolean`
 
 This value is true if all fields are filled. This validation includes excluded fields in second arguments.
 
-#### `hasNoError: boolean`
+#### Variable | `hasNoError: boolean`
 
 This value is true if all fields has no error. This validation includes excluded fields in second arguments.
 
-#### `canSubmit: boolean`
+#### Variable | `canSubmit: boolean`
 
 - Before submit: This value is true if `isFilled`
 - After submit: This value is true if `hasNoError`
@@ -93,6 +93,10 @@ const ExampleForm = () => {
   );
 };
 ```
+
+#### Functions | `setIsFilled`, `setHasNoError`, `setCanSubmit`
+
+If you want to update each value manually, you can use these functions.
 
 ## Differences between each method
 
