@@ -1,3 +1,7 @@
+## 0.0.17 (February 9, 2022)
+
+- Change typedef.
+
 ## 0.0.16 (February 9, 2022)
 
 - Add validation result mutators.
