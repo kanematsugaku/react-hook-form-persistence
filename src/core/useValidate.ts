@@ -21,7 +21,7 @@ const canSubmit = <T>(
   return isSubmitted ? hasNoError_ : isFilled_;
 };
 
-export const useValidate = <T extends FieldValues>(useFormReturn: UseFormReturn<T>) => {
+const useValidate = <T extends FieldValues>(useFormReturn: UseFormReturn<T>) => {
   const {
     getValues,
     formState: { errors, isSubmitted },
@@ -33,10 +33,13 @@ export const useValidate = <T extends FieldValues>(useFormReturn: UseFormReturn<
 
   return {
     isFilled: isFilled_,
-    setIsFilled: setIsFilled_ as (bool: boolean) => void,
+    setIsFilled: setIsFilled_,
     hasNoError: hasNoError_,
-    setHasNoError: setHasNoError_ as (bool: boolean) => void,
+    setHasNoError: setHasNoError_,
     canSubmit: canSubmit_,
-    setCanSubmit: setCanSubmit_ as (bool: boolean) => void,
+    setCanSubmit: setCanSubmit_,
   };
 };
+
+export { useValidate };
+export type UseValidateReturn = ReturnType<typeof useValidate>;
