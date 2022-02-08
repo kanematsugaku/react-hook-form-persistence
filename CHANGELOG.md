@@ -1,3 +1,10 @@
+## 0.0.16 (February 9, 2022)
+
+- Add validation result mutators.
+  - `setIsFilled`
+  - `setHasNoError`
+  - `setCanSubmit`
+
 ## 0.0.15 (January 26, 2022)
 
 - Remove Date object conversion.

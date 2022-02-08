@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { UseFormGetValues, FormState, UseFormReturn, FieldValues } from 'react-hook-form';
 
 /** Return true if all fields are filled. */
@@ -20,19 +21,22 @@ const canSubmit = <T>(
   return isSubmitted ? hasNoError_ : isFilled_;
 };
 
-export const validate = <T extends FieldValues>(useFormReturn: UseFormReturn<T>) => {
+export const useValidate = <T extends FieldValues>(useFormReturn: UseFormReturn<T>) => {
   const {
     getValues,
     formState: { errors, isSubmitted },
   } = useFormReturn;
 
-  const isFilled_ = isFilled(getValues);
-  const hasNoError_ = hasNoError(errors);
-  const canSubmit_ = canSubmit(isSubmitted, isFilled_, hasNoError_);
+  const [isFilled_, setIsFilled_] = useState(isFilled(getValues));
+  const [hasNoError_, setHasNoError_] = useState(hasNoError(errors));
+  const [canSubmit_, setCanSubmit_] = useState(canSubmit(isSubmitted, isFilled_, hasNoError_));
 
   return {
     isFilled: isFilled_,
+    setIsFilled: setIsFilled_,
     hasNoError: hasNoError_,
+    setHasNoError: setHasNoError_,
     canSubmit: canSubmit_,
+    setCanSubmit: setCanSubmit_,
   };
 };

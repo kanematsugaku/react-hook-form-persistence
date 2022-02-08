@@ -5,9 +5,9 @@ import type {
   PathValue,
   UnpackNestedValue,
 } from 'react-hook-form';
+import { useValidate } from './useValidate';
 import { useEffect, useCallback, useMemo } from 'react';
 import { isValidRecord, isValidRecords, removeProperties, objectify } from '../util';
-import { validate } from '../share';
 import type { NonEmptyString } from '../types';
 
 export function useFormPersistMultiplePages<T extends FieldValues, U extends string>(
@@ -85,6 +85,6 @@ export function useFormPersistMultiplePages<T extends FieldValues, U extends str
     ...useFormReturn,
     unpersist,
     getPersisted,
-    ...validate(useFormReturn),
+    ...useValidate(useFormReturn),
   };
 }
