@@ -33,10 +33,10 @@ export const useValidate = <T extends FieldValues>(useFormReturn: UseFormReturn<
 
   return {
     isFilled: isFilled_,
-    setIsFilled: setIsFilled_,
+    setIsFilled: setIsFilled_ as (bool: boolean) => void,
     hasNoError: hasNoError_,
-    setHasNoError: setHasNoError_,
+    setHasNoError: setHasNoError_ as (bool: boolean) => void,
     canSubmit: canSubmit_,
-    setCanSubmit: setCanSubmit_,
+    setCanSubmit: setCanSubmit_ as (bool: boolean) => void,
   };
 };
