@@ -1,6 +1,6 @@
 {
   "name": "react-hook-form-persistence",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "A very simple library for persisting react-hook-form.",
   "license": "MIT",
   "main": "./dist/main.js",
