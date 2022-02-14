@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { UseFormGetValues, FormState, UseFormReturn, FieldValues } from 'react-hook-form';
 
 /** Return true if all fields are filled. */
@@ -27,19 +27,28 @@ const useValidate = <T extends FieldValues>(useFormReturn: UseFormReturn<T>) => 
     formState: { errors, isSubmitted },
   } = useFormReturn;
 
-  const [isFilled_, setIsFilled_] = useState(isFilled(getValues));
-  const [hasNoError_, setHasNoError_] = useState(hasNoError(errors));
-  const [canSubmit_, setCanSubmit_] = useState(canSubmit(isSubmitted, isFilled_, hasNoError_));
+  const isFilled_ = isFilled(getValues);
+  const hasNoError_ = hasNoError(errors);
+  const canSubmit_ = canSubmit(isSubmitted, isFilled_, hasNoError_);
+
+  const [isFilledState, setIsFilledState] = useState(isFilled_);
+  const [hasNoErrorState, setHasNoErrorState] = useState(hasNoError_);
+  const [canSubmitState, setCanSubmitState] = useState(canSubmit_);
+
+  useEffect(() => setIsFilledState(isFilled_), [isFilled_]);
+  useEffect(() => setHasNoErrorState(hasNoError_), [hasNoError_]);
+  useEffect(() => setCanSubmitState(canSubmit_), [canSubmit_]);
 
   return {
-    isFilled: isFilled_,
-    setIsFilled: setIsFilled_,
-    hasNoError: hasNoError_,
-    setHasNoError: setHasNoError_,
-    canSubmit: canSubmit_,
-    setCanSubmit: setCanSubmit_,
+    isFilled: isFilledState,
+    setIsFilled: setIsFilledState,
+    hasNoError: hasNoErrorState,
+    setHasNoError: setHasNoErrorState,
+    canSubmit: canSubmitState,
+    setCanSubmit: setCanSubmitState,
   };
 };
 
 export { useValidate };
+
 export type UseValidateReturn = ReturnType<typeof useValidate>;

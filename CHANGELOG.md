@@ -1,3 +1,7 @@
+## 0.0.19 (February 14, 2022)
+
+- Bug fix.
+
 ## 0.0.18 (February 9, 2022)
 
 - Export typedef.
